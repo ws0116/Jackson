@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JACKSON充值中心</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ── 游戏卡片网格 (大照片版) ── */
+.game-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.game-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s;
+  overflow: hidden;
+  position: relative;
+}
+
+.game-card:hover {
+  border-color: var(--pink);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px var(--pink-glow);
+}
+
+.game-card-img {
+  width: 100%;
+  height: 140px; /* 大照片的高度 */
+  background: var(--bg3);
+  position: relative;
+}
+
+.game-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-card-info {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.game-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.game-card-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.game-card-btn {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--pink), var(--accent2));
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: opacity 0.2s;
+}
+.game-card-btn:hover { opacity: 0.9; }
+
+/* ── 其他服务网格 (小图标版) ── */
+.service-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  padding: 0 20px 16px;
+}
+
+.service-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+  display: block;
+  transition: all 0.2s;
+}
+
+.service-card:hover {
+  border-color: var(--pink);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px var(--pink-glow);
+}
+
+.service-icon {
+  width: 54px; height: 54px;
+  border-radius: 12px;
+  background: var(--bg3);
+  margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+}
+
+.service-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.service-card p  { font-size: 11px; color: var(--text-dim); }
+
+/* ── 特性介绍 ── */
+.features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 20px 20px 16px;
+  text-align: center;
+}
+
+.feature .f-icon { font-size: 22px; margin-bottom: 6px; }
+.feature .f-label { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+
+.section-label {
+  padding: 16px 20px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1><span class="bolt">⚡</span> JACKSON充值中心</h1>
+  <p class="tagline">游戏充值 · 快速安全</p>
+  <div class="header-contacts">
+    <a href="https://m.me/JacksonLing" target="_blank">
+      <img src="img/facebook.png" alt="FB"> Jackson Ling
+    </a>
+    <a href="javascript:void(0)" onclick="openWechat()">
+      <img src="img/wechat.png" alt="WeChat"> jackson66399
+    </a>
+    <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%83%B3%E8%AF%A2%E9%97%AE%E6%9C%89%E4%BB%80%E4%B9%88%E6%9C%8D%E5%8A%A1%EF%BC%9F" target="_blank">
+      <img src="img/whatsapp.png" alt="WA"> 011-5041 9895
+    </a>
+  </div>
+</header>
+
+<div class="features">
+  <div class="feature"><div class="f-icon">⚡</div><div class="f-label">即时<br>到账</div></div>
+  <div class="feature"><div class="f-icon">🔒</div><div class="f-label">安全<br>保障</div></div>
+  <div class="feature"><div class="f-icon">💰</div><div class="f-label">优惠<br>汇率</div></div>
+  <div class="feature"><div class="f-icon">📱</div><div class="f-label">扫码<br>支付</div></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section-label">游戏充值</div>
+<div class="game-cards">
+  
+  <a href="wzry.html" class="game-card">
+    <div class="game-card-img">
+      <img src="img/wzry.jpeg" onerror="this.style.display='none'" alt="王者荣耀">
+    </div>
+    <div class="game-card-info">
+      <div class="game-card-title">王者荣耀</div>
+      <div class="game-card-sub">点卷充值</div>
+      <div class="game-card-btn">立即购买</div>
+    </div>
+  </a>
+
+  <a href="hpjy.html" class="game-card">
+    <div class="game-card-img">
+      <img src="img/hpjy.jpeg" onerror="this.style.display='none'" alt="和平精英">
+    </div>
+    <div class="game-card-info">
+      <div class="game-card-title">和平精英</div>
+      <div class="game-card-sub">点卷充值</div>
+      <div class="game-card-btn">立即购买</div>
+    </div>
+  </a>
+
+  <a href="wwqy.html" class="game-card">
+    <div class="game-card-img">
+      <img src="img/wwqy.jpeg" onerror="this.style.display='none'" alt="无畏契约">
+    </div>
+    <div class="game-card-info">
+      <div class="game-card-title">无畏契约</div>
+      <div class="game-card-sub">点数充值</div>
+      <div class="game-card-btn">立即购买</div>
+    </div>
+  </a>
+
+</div>
+
+<div class="section-label">其他服务</div>
+<div class="service-cards">
+  <a href="huanhui.html" class="service-card">
+    <div class="service-icon">💱</div>
+    <h3>人民币换汇</h3>
+    <p>实时汇率</p>
+  </a>
+  <a href="taoxian.html" class="service-card">
+    <div class="service-icon">💸</div>
+    <h3>套现</h3>
+    <p>多平台支持</p>
+  </a>
+</div>
+
+<script src="cart.js"></script>
+</body>
+</html>

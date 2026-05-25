@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人民币换汇 - JACKSON充值中心</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.rate-tables-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px 20px;
+}
+
+@media (max-width: 480px) {
+  .rate-tables-wrap { grid-template-columns: 1fr; }
+}
+
+.rate-table-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.rate-table-header {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rate-table-header.alipay  { background: #1677FF; color: #fff; }
+.rate-table-header.wechat  { background: #07C160; color: #fff; }
+
+.rate-table-body { background: var(--card); }
+
+.rate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.rate-row:last-child { border-bottom: none; }
+
+.rate-row .range { color: var(--text-dim); }
+.rate-row .rate-val { color: var(--pink-lite); font-weight: 700; font-size: 14px; }
+
+.calc-card { margin: 0 20px 16px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <h1><span class="bolt">⚡</span> JACKSON充值中心</h1>
+  <p class="tagline">游戏充值 · 快速安全</p>
+  <div class="header-contacts">
+    <a href="https://m.me/JacksonLing" target="_blank">
+      <img src="img/facebook.png" alt="FB"> Jackson Ling
+    </a>
+    <a href="javascript:void(0)" onclick="openWechat()">
+      <img src="img/wechat.png" alt="WeChat"> jackson66399
+    </a>
+    <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E5%92%A8%E8%AF%A2%E4%BA%BA%E6%B0%91%E5%B8%81%E5%85%91%E6%8D%A2%E6%9C%8D%E5%8A%A1" target="_blank">
+      <img src="img/whatsapp.png" alt="WA"> 011-5041 9895
+    </a>
+  </div>
+</header>
+
+<!-- NAV TABS -->
+<nav class="nav-tabs">
+  <a href="wzry.html" class="nav-tab">
+    <img src="img/wzry.jpeg" onerror="this.style.display='none'" alt=""> 王者荣耀
+  </a>
+  <a href="hpjy.html" class="nav-tab">
+    <img src="img/hpjy.jpeg" onerror="this.style.display='none'" alt=""> 和平精英
+  </a>
+  <a href="wwqy.html" class="nav-tab">
+    <img src="img/wwqy.jpeg" onerror="this.style.display='none'" alt=""> 无畏契约
+  </a>
+  <a href="huanhui.html" class="nav-tab active">💱 人民币换汇</a>
+  <a href="taoxian.html" class="nav-tab">💸 套现</a>
+</nav>
+<!-- SECTION TITLE -->
+<div class="section-title">
+  <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#ff4d8d,#e0357a);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">
+    💱
+  </div>
+  <div class="info">
+    <h2>人民币换汇</h2>
+    <p>汇率随国际汇率实时更新</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CALCULATOR -->
+<div class="calc-card">
+  <h3>💰 换汇计算器</h3>
+  <div class="calc-row">
+    <div class="calc-field">
+      <label>马币金额 (RM)</label>
+      <input type="number" id="rm-input" value="10000" min="1" oninput="calcCurrency()">
+    </div>
+    <div class="calc-field">
+      <label>收款方式</label>
+      <select id="method-select" onchange="calcCurrency()">
+        <option value="alipay">支付宝</option>
+        <option value="wechat">微信支付</option>
+      </select>
+    </div>
+  </div>
+  <div class="calc-result">
+    <div class="calc-result-row">
+      <span class="label">适用汇率</span>
+      <span class="value" id="rate-display">1.69</span>
+    </div>
+    <div class="calc-result-row">
+      <span class="label">可得人民币</span>
+      <span class="value yellow" id="cny-display">¥ 16900.00</span>
+    </div>
+  </div>
+</div>
+
+<!-- RATE TABLES -->
+<div class="rate-tables-wrap">
+  <!-- 支付宝 -->
+  <div class="rate-table-card">
+    <div class="rate-table-header alipay">💙 支付宝人民币汇率</div>
+    <div class="rate-table-body">
+      <div class="rate-row"><span class="range">低于 RM50</span><span class="rate-val">1.50</span></div>
+      <div class="rate-row"><span class="range">RM50 – RM100</span><span class="rate-val">1.50</span></div>
+      <div class="rate-row"><span class="range">RM100 – RM1,000</span><span class="rate-val">1.66</span></div>
+      <div class="rate-row"><span class="range">RM1,000 – RM5,000</span><span class="rate-val">1.67</span></div>
+      <div class="rate-row"><span class="range">RM5,000 – RM10,000</span><span class="rate-val">1.68</span></div>
+      <div class="rate-row"><span class="range">RM10,000 以上</span><span class="rate-val">1.69</span></div>
+    </div>
+  </div>
+
+  <!-- 微信 -->
+  <div class="rate-table-card">
+    <div class="rate-table-header wechat">💚 微信人民币汇率</div>
+    <div class="rate-table-body">
+      <div class="rate-row"><span class="range">低于 RM50</span><span class="rate-val">1.50</span></div>
+      <div class="rate-row"><span class="range">RM50 – RM100</span><span class="rate-val">1.50</span></div>
+      <div class="rate-row"><span class="range">RM100 – RM1,000</span><span class="rate-val">1.55</span></div>
+      <div class="rate-row"><span class="range">RM1,000 – RM5,000</span><span class="rate-val">1.66</span></div>
+      <div class="rate-row"><span class="range">RM5,000 – RM10,000</span><span class="rate-val">1.67</span></div>
+      <div class="rate-row"><span class="range">RM10,000 以上</span><span class="rate-val">1.68</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT CTA + CHECKOUT -->
+<div style="margin: 0 20px 20px; display:flex; flex-direction:column; gap:10px;">
+  <button onclick="goCheckout()" style="width:100%;padding:15px;background:linear-gradient(135deg,#ff4d8d,#e0357a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px var(--pink-glow);font-family:inherit;letter-spacing:0.4px;">
+    ✅ 立即结算换汇
+  </button>
+  <a href="https://wa.me/601150419895" target="_blank" style="display:block;padding:13px;background:transparent;color:var(--text-dim);border:1px solid var(--border);border-radius:14px;text-decoration:none;font-size:14px;font-weight:600;text-align:center;">
+    💬 联系客服咨询
+  </a>
+</div>
+
+
+<script src="cart.js"></script>
+<script>
+// Tiered rates
+const alipayRates = [
+  { min: 0,     max: 50,    rate: 1.50 },
+  { min: 50,    max: 100,   rate: 1.50 },
+  { min: 100,   max: 1000,  rate: 1.66 },
+  { min: 1000,  max: 5000,  rate: 1.67 },
+  { min: 5000,  max: 10000, rate: 1.68 },
+  { min: 10000, max: Infinity, rate: 1.69 },
+];
+const wechatRates = [
+  { min: 0,     max: 50,    rate: 1.50 },
+  { min: 50,    max: 100,   rate: 1.50 },
+  { min: 100,   max: 1000,  rate: 1.55 },
+  { min: 1000,  max: 5000,  rate: 1.66 },
+  { min: 5000,  max: 10000, rate: 1.67 },
+  { min: 10000, max: Infinity, rate: 1.68 },
+];
+
+function getRate(rm, method) {
+  const tiers = method === 'alipay' ? alipayRates : wechatRates;
+  const tier = tiers.find(t => rm >= t.min && rm < t.max) || tiers[tiers.length - 1];
+  return tier.rate;
+}
+
+function calcCurrency() {
+  const rm     = parseFloat(document.getElementById('rm-input').value) || 0;
+  const method = document.getElementById('method-select').value;
+  const rate   = getRate(rm, method);
+  document.getElementById('rate-display').textContent = rate.toFixed(2);
+  document.getElementById('cny-display').textContent  = '¥ ' + (rm * rate).toFixed(2);
+}
+
+document.addEventListener('DOMContentLoaded', calcCurrency);
+
+function goCheckout() {
+  const rm     = parseFloat(document.getElementById('rm-input').value) || 0;
+  const method = document.getElementById('method-select').value;
+  const rate   = getRate(rm, method);
+  const cny    = rm * rate;
+  if (!rm || rm <= 0) { alert('请先输入马币金额！'); return; }
+  const url = `huanhuicart.html?rm=${rm.toFixed(2)}&cny=${cny.toFixed(2)}&rate=${rate.toFixed(2)}&method=${method}`;
+  window.location.href = url;
+}
+</script>
+</body>
+</html>

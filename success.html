@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单已提交 - JACKSON充值中心</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.success-wrap {
+  padding: 32px 20px 120px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── Success icon & title ── */
+.success-hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.success-checkmark {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 30px;
+  color: var(--pink-lite);
+  position: relative;
+  overflow: hidden;
+}
+
+.success-checkmark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--pink);
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0;   }
+}
+
+.success-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.success-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ── Copy box ── */
+.copy-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.copy-box-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+.copy-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.85;
+  white-space: pre-wrap;
+  font-family: monospace;
+  padding: 14px;
+  margin: 0;
+}
+
+.copy-btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #ff4d8d, #e0357a);
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+  letter-spacing: 0.3px;
+}
+.copy-btn:active { opacity: 0.85; }
+.copy-btn.copied { background: linear-gradient(135deg,#34c759,#28a745); }
+
+/* ── Contact links ── */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.2s, transform 0.15s;
+}
+.contact-link:hover  { border-color: var(--pink); transform: translateX(2px); }
+.contact-link:active { transform: scale(0.98); }
+
+.contact-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.contact-info strong { font-size: 14px; font-weight: 700; display: block; margin-bottom: 2px; }
+.contact-info span   { font-size: 12px; color: var(--text-dim); }
+
+.contact-arrow {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 16px;
+}
+
+/* ── Done button ── */
+.done-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff4d8d, #e0357a);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 24px var(--pink-glow);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-bottom: 12px;
+}
+.done-btn:active { transform: scale(0.98); opacity: 0.9; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <h1><span class="bolt">⚡</span> JACKSON充值中心</h1>
+  <p class="tagline">游戏充值 · 快速安全</p>
+  <div class="header-contacts">
+    <a href="https://m.me/JacksonLing" target="_blank">
+      <img src="img/facebook.png" alt="FB"> Jackson Ling
+    </a>
+    <a href="javascript:void(0)" onclick="openWechat()">
+      <img src="img/wechat.png" alt="WeChat"> jackson66399
+    </a>
+    <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%83%B3%E8%AF%A2%E9%97%AE%E6%9C%89%E4%BB%80%E4%B9%88%E6%9C%8D%E5%8A%A1%EF%BC%9F" target="_blank">
+      <img src="img/whatsapp.png" alt="WA"> 011-5041 9895
+    </a>
+  </div>
+</header>
+
+<div class="success-wrap">
+
+  <!-- Hero -->
+  <div class="success-hero">
+    <div class="success-checkmark">✓</div>
+    <div class="success-title">订单已提交！</div>
+    <div class="success-sub">请复制以下订单信息，通过任一方式发给我们，并附上付款截图。</div>
+  </div>
+
+  <!-- Copy Box -->
+  <div class="copy-box">
+    <div class="copy-box-header">📋 复制订单信息</div>
+    <pre class="copy-text" id="copyText">正在加载订单信息...</pre>
+    <button class="copy-btn" id="copyBtn" onclick="copyOrder()">📋 复制订单信息</button>
+  </div>
+
+  <!-- Contact Links -->
+  <div class="contact-links" id="contactLinks">
+    <!-- populated by JS -->
+  </div>
+
+  <!-- Done Button -->
+  <a href="index.html" class="done-btn">✅ 完成</a>
+
+</div>
+
+<script>
+const ORDER_KEY = 'jackson_last_order';
+
+function loadOrder() {
+  try {
+    const raw = sessionStorage.getItem(ORDER_KEY);
+    if(!raw) { showNoOrder(); return; }
+    const order = JSON.parse(raw);
+
+    // Use the pre-built message from submitOrder (contains per-group pts breakdown)
+    const lines = order.msg || [
+      '📦 *新订单*',
+      '',
+      order.items,
+      '',
+      `💰 合计: RM ${Number(order.total).toFixed(2)}`,
+      ...(order.ptsLines || []),
+      `🎮 游戏: ${order.game}`,
+      ...(order.daqu ? [`🌏 大区: ${order.daqu}`] : []),
+      `🖥 系统: ${order.system}`,
+      `💳 充值方式: ${order.method}`,
+      `👤 游戏名字: ${order.nick}`,
+      `💬 微信名字: ${order.wx}`,
+      ...(order.remark ? [`📝 备注: ${order.remark}`] : []),
+    ].join('\n');
+
+    document.getElementById('copyText').textContent = lines;
+
+    // Contact links
+    const waUrl = `https://wa.me/601150419895?text=${encodeURIComponent(lines)}`;
+    document.getElementById('contactLinks').innerHTML = `
+      <a class="contact-link" href="${waUrl}" target="_blank">
+        <div class="contact-icon" style="background:#25D366;overflow:hidden;padding:0"><img src="img/whatsapp.png" alt="WA" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        <div class="contact-info">
+          <strong>WhatsApp</strong>
+          <span>011-5041 9895</span>
+        </div>
+        <span class="contact-arrow">›</span>
+      </a>
+      <a class="contact-link" href="https://m.me/JacksonLing" target="_blank">
+        <div class="contact-icon" style="background:#1877F2;overflow:hidden;padding:0"><img src="img/facebook.png" alt="FB" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        <div class="contact-info">
+          <strong>Facebook</strong>
+          <span>Jackson Ling</span>
+        </div>
+        <span class="contact-arrow">›</span>
+      </a>
+      <a class="contact-link" href="javascript:void(0)" onclick="openWechat()">
+        <div class="contact-icon" style="background:#07C160;overflow:hidden;padding:0"><img src="img/wechat.png" alt="WeChat" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        <div class="contact-info">
+          <strong>微信</strong>
+          <span>jackson66399</span>
+        </div>
+        <span class="contact-arrow">›</span>
+      </a>`;
+  } catch(e) {
+    showNoOrder();
+  }
+}
+
+function showNoOrder() {
+  document.getElementById('copyText').textContent = '未找到订单信息';
+  document.getElementById('contactLinks').innerHTML = '';
+}
+
+function copyOrder() {
+  const el  = document.getElementById('copyText');
+  const btn = document.getElementById('copyBtn');
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = '✅ 已复制！';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='📋 复制订单信息'; btn.classList.remove('copied'); }, 2500);
+  }).catch(()=>{
+    const r = document.createRange();
+    r.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+    document.execCommand('copy');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadOrder);
+
+// ── WeChat 弹窗 ──────────────────────────────────────────────────────────
+function openWechat() {
+  const wxId = 'jackson66399';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(wxId).catch(()=>{});
+  } else {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = wxId; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+    } catch(e){}
+  }
+  let modal = document.getElementById('wechatModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'wechatModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+    modal.innerHTML = `
+      <div style="background:var(--bg2,#1a1a2e);border:1px solid var(--border,#2a2a3e);border-radius:20px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+        <div style="width:56px;height:56px;border-radius:50%;background:#07C160;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 16px"><img src="img/wechat.png" style="width:100%;height:100%;object-fit:cover" alt="WeChat"></div>
+        <div style="font-size:17px;font-weight:800;color:var(--text,#fff);margin-bottom:6px">添加微信</div>
+        <div style="font-size:13px;color:var(--text-dim,#aaa);margin-bottom:16px">微信号已复制到剪贴板</div>
+        <div style="background:var(--bg3,#0d0d1a);border:1px solid var(--border,#2a2a3e);border-radius:12px;padding:14px 16px;margin-bottom:18px">
+          <div style="font-size:22px;font-weight:800;letter-spacing:1px;color:#ff6eb0">${wxId}</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-dim,#aaa);margin-bottom:18px;line-height:1.6">请打开微信 → 搜索以上微信号 → 添加好友</div>
+        <button id="wechatCopyBtn" onclick="(function(){
+          if(navigator.clipboard){navigator.clipboard.writeText('jackson66399').catch(()=>{})}
+          var b=document.getElementById('wechatCopyBtn');
+          b.textContent='✅ 已复制！';b.style.background='linear-gradient(135deg,#34c759,#28a745)';
+          setTimeout(function(){b.textContent='📋 再次复制微信号';b.style.background='';},2000);
+        })()" style="width:100%;padding:12px;background:linear-gradient(135deg,#07C160,#05a050);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;font-family:inherit">📋 再次复制微信号</button>
+        <button onclick="document.getElementById('wechatModal').style.display='none'" style="width:100%;padding:11px;background:transparent;border:1px solid var(--border,#2a2a3e);color:var(--text-dim,#aaa);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">关闭</button>
+      </div>`;
+    modal.addEventListener('click', function(e){ if(e.target===modal) modal.style.display='none'; });
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display = 'flex';
+    const btn = document.getElementById('wechatCopyBtn');
+    if(btn){ btn.textContent='📋 再次复制微信号'; btn.style.background=''; }
+  }
+}
+</script>
+</body>
+</html>

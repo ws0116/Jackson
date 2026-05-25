@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>购物车 - JACKSON充值中心</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.cart-page-wrap {
+  padding: 16px 20px 120px;
+}
+
+.cart-page-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.cart-page-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.cart-page-header .back-link {
+  color: var(--pink-lite);
+  text-decoration: none;
+  font-size: 14px;
+  margin-left: auto;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+.empty-icon { font-size: 56px; margin-bottom: 12px; }
+.empty-text { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.empty-sub  { font-size: 13px; color: var(--text-dim); margin-bottom: 24px; }
+.back-shop-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #ff4d8d, #e0357a);
+  color: #fff;
+  border-radius: 24px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px var(--pink-glow);
+}
+
+/* Cart rows */
+.cart-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cart-row {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: border-color 0.2s;
+}
+
+.cart-row:hover {
+  border-color: var(--pink);
+}
+
+.cart-row-info { flex: 1; min-width: 0; }
+.cart-row-game {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cart-row-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pink-lite);
+}
+
+.cart-row-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.cart-qty-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--bg3);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.cqc-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--pink-lite);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.cqc-btn:hover { background: rgba(255,77,141,0.2); }
+.cqc-btn.minus { border-right: 1px solid var(--border); }
+.cqc-btn.plus  { border-left:  1px solid var(--border); }
+
+.cqc-num {
+  min-width: 28px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cart-row-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Summary */
+.cart-summary {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-dim);
+  padding: 5px 0;
+}
+
+.summary-row.total {
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+  padding-top: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.total-amount {
+  color: var(--pink-lite);
+  font-size: 18px;
+}
+
+/* Checkout button */
+.checkout-float-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 20px;
+  right: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff4d8d, #e0357a);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 24px var(--pink-glow);
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s, transform 0.1s;
+  z-index: 100;
+}
+.checkout-float-btn:active { transform: scale(0.98); }
+
+/* ── Checkout Overlay ── */
+#checkoutOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+#checkoutOverlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+#checkoutOverlay.open #checkoutSheet {
+  transform: translateY(0);
+}
+
+#checkoutSheet {
+  background: var(--bg2);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+#checkoutContent {
+  padding: 20px 20px 32px;
+}
+
+/* Checkout form styles */
+.co-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.co-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.co-close {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.co-order-summary {
+  background: var(--bg3);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.co-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-dim);
+  padding: 4px 0;
+}
+
+.co-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.co-total-amt { color: var(--pink-lite); }
+
+.co-form { margin-bottom: 16px; }
+
+.co-field {
+  margin-bottom: 14px;
+}
+
+.co-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.co-field .hint { color: var(--text-dim); font-weight: 400; }
+.co-field .req  { color: var(--pink-lite); }
+
+.co-field input,
+.co-field select,
+.co-field textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--text);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.co-field input:focus,
+.co-field select:focus,
+.co-field textarea:focus {
+  border-color: var(--pink);
+}
+
+.co-field textarea { min-height: 80px; resize: vertical; }
+
+.co-guide {
+  background: rgba(255,77,141,0.1);
+  border: 1px solid rgba(255,77,141,0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.co-payment {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.co-pay-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.co-pay-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.pay-badge {
+  background: rgba(255,77,141,0.15);
+  border: 1px solid rgba(255,77,141,0.3);
+  color: var(--pink-lite);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.co-account {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--pink-lite);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.co-pay-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.co-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff4d8d, #e0357a);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--pink-glow);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s;
+}
+.co-submit-btn:active { opacity: 0.85; }
+
+.co-back-btn {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.co-back-btn:hover { border-color: var(--pink); color: var(--text); }
+
+/* Success screen */
+.co-success {
+  text-align: center;
+  padding: 20px 0 16px;
+}
+.co-success-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #ff4d8d, #e0357a);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #fff;
+  margin: 0 auto 14px;
+  box-shadow: 0 4px 20px var(--pink-glow);
+}
+.co-success-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.co-success-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.co-copy-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.co-copy-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.co-copy-text {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  font-family: monospace;
+  margin-bottom: 10px;
+}
+.co-copy-btn {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255,77,141,0.15);
+  border: 1px solid rgba(255,77,141,0.4);
+  color: var(--pink-lite);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.co-copy-btn.copied { background: rgba(52,199,89,0.2); border-color: #34c759; color: #34c759; }
+
+.co-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.co-contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+.co-contact-link:hover { border-color: var(--pink); }
+.co-ci {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.co-ci-sub { font-size: 11px; color: var(--text-dim); }
+</style>
+
+</head>
+<body>
+
+<header class="site-header">
+  <h1><span class="bolt">⚡</span> JACKSON充值中心</h1>
+  <p class="tagline">游戏充值 · 快速安全</p>
+  <div class="header-contacts">
+    <a href="https://m.me/JacksonLing" target="_blank">
+      <img src="img/facebook.png" alt="FB"> Jackson Ling
+    </a>
+    <a href="javascript:void(0)" onclick="openWechat()">
+      <img src="img/wechat.png" alt="WeChat"> jackson66399
+    </a>
+    <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E5%92%A8%E8%AF%A2%E6%B8%B8%E6%88%8F%E5%85%85%E5%80%BC%E6%9C%8D%E5%8A%A1" target="_blank">
+      <img src="img/whatsapp.png" alt="WA"> 011-5041 9895
+    </a>
+  </div>
+</header>
+
+<nav class="nav-tabs">
+  <a href="wzry.html" class="nav-tab">
+    <img src="img/wzry.jpeg" onerror="this.style.display='none'" alt=""> 王者荣耀
+  </a>
+  <a href="hpjy.html" class="nav-tab">
+    <img src="img/hpjy.jpeg" onerror="this.style.display='none'" alt=""> 和平精英
+  </a>
+  <a href="wwqy.html" class="nav-tab">
+    <img src="img/wwqy.jpeg" onerror="this.style.display='none'" alt=""> 无畏契约
+  </a>
+  <a href="huanhui.html" class="nav-tab">💱 人民币换汇</a>
+  <a href="taoxian.html" class="nav-tab">💸 套现</a>
+</nav>
+
+<div class="cart-page-wrap">
+  <div class="cart-page-header">
+    <h2>🛒 购物车</h2>
+    <a href="javascript:history.back()" class="back-link">← 继续选购</a>
+  </div>
+
+  <div id="cartPageContent"></div>
+</div>
+
+<button class="checkout-float-btn" id="checkoutBtn" onclick="openCheckout()">去结算 →</button>
+
+<div id="checkoutOverlay">
+  <div id="checkoutSheet">
+    <div id="checkoutContent"></div>
+  </div>
+</div>
+
+<script>
+// Expose renderCartPage for cart.js to call
+function renderCartPage() {
+  const container = document.getElementById('cartPageContent');
+  if(!container) return;
+
+  const cart  = getCart();
+  const total = cartTotal();
+  const count = cartCount();
+
+  const checkoutBtn = document.getElementById('checkoutBtn');
+
+  if(count === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <div class="empty-text">购物车是空的</div>
+        <div class="empty-sub">去选择要充值的项目吧！</div>
+        <a href="javascript:history.back()" class="back-shop-btn">← 继续选购</a>
+      </div>`;
+    if(checkoutBtn) checkoutBtn.style.display = 'none';
+    return;
+  }
+
+  if(checkoutBtn) checkoutBtn.style.display = '';
+
+  const itemsHtml = cart.map(c => `
+    <div class="cart-row">
+      <div class="cart-row-info">
+        <div class="cart-row-game">${c.game}</div>
+        <div class="cart-row-name">${c.name}</div>
+      </div>
+      <div class="cart-row-right">
+        <div class="cart-qty-ctrl">
+          <button class="cqc-btn minus" onclick="changeQty('${c.id}',-1)">−</button>
+          <span class="cqc-num">${c.qty}</span>
+          <button class="cqc-btn plus" onclick="changeQty('${c.id}',1)">+</button>
+        </div>
+        <div class="cart-row-price">RM ${(c.price*c.qty).toFixed(2)}</div>
+      </div>
+    </div>`).join('');
+
+  container.innerHTML = `
+    <div class="cart-items-list">${itemsHtml}</div>
+    <div class="cart-summary">
+      <div class="summary-row">
+        <span>商品数量</span>
+        <span>${count} 件</span>
+      </div>
+      ${(()=>{
+        const groupPts = {};
+        const groupOrder = [];
+        cart.forEach(c => {
+          let gk;
+          if      (c.id.startsWith('hpjy-and-')) gk = '🤖 和平安卓';
+          else if (c.id.startsWith('hpjy-ios-')) gk = '🍎 和平苹果';
+          else if (c.id.startsWith('wzry-and-')) gk = '🤖 王者安卓';
+          else if (c.id.startsWith('wzry-ios-')) gk = '🍎 王者苹果';
+          else if (c.id.startsWith('wwqy-'))     gk = '🎯 无畏契约';
+          else gk = c.game;
+          const m = c.name.match(/(\d+)\s*点卷/);
+          const pts = m ? parseInt(m[1]) * c.qty : 0;
+          if (pts > 0) {
+            if (!groupPts[gk]) { groupPts[gk] = 0; groupOrder.push(gk); }
+            groupPts[gk] += pts;
+          }
+        });
+        return groupOrder.map(gk =>
+          `<div class="summary-row"><span>点卷 · ${gk}</span><span style="color:var(--pink-lite);font-weight:700">${groupPts[gk].toLocaleString()} 点卷</span></div>`
+        ).join('');
+      })()}
+      <div class="summary-row total">
+        <span>合计</span>
+        <span class="total-amount">RM ${total.toFixed(2)}</span>
+      </div>
+      <button onclick="clearCart()" style="width:100%; margin-top:14px; padding:11px; background:rgba(255,77,141,0.1); border:1px dashed rgba(255,77,141,0.4); color:var(--pink-lite); border-radius:10px; font-weight:700; cursor:pointer; font-size:13px; transition:all 0.2s;">
+        🗑️ 清空购物车
+      </button>
+    </div>`;
+}
+</script>
+<script src="cart.js"></script>
+</body>
+</html>

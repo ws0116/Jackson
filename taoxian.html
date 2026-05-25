@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>套现 - JACKSON充值中心</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.method-icon-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.method-icon-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+/* ── 平台详情弹窗 ── */
+#detailModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+#detailModal.open { display: flex; }
+#detailSheet {
+  background: var(--bg2, #1a1a2e);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 0 0 env(safe-area-inset-bottom, 20px);
+  animation: slideUp 0.28s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.detail-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg2, #1a1a2e);
+  z-index: 1;
+}
+.detail-sheet-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.detail-sheet-close {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.detail-sheet-body { padding: 16px 20px 24px; }
+.detail-img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  display: block;
+  max-height: 280px;
+  object-fit: contain;
+  background: var(--bg3);
+}
+.detail-note {
+  background: rgba(255,77,141,0.1);
+  border: 1px solid rgba(255,77,141,0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.75;
+}
+.detail-note strong { color: var(--pink-lite); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1><span class="bolt">⚡</span> JACKSON充值中心</h1>
+  <p class="tagline">游戏充值 · 快速安全</p>
+  <div class="header-contacts">
+    <a href="https://m.me/JacksonLing" target="_blank">
+      <img src="img/facebook.png" alt="FB"> Jackson Ling
+    </a>
+    <a href="javascript:void(0)" onclick="openWechat()">
+      <img src="img/wechat.png" alt="WeChat"> jackson66399
+    </a>
+    <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E5%92%A8%E8%AF%A2%E5%A5%97%E7%8E%B0%E6%9C%8D%E5%8A%A1" target="_blank">
+      <img src="img/whatsapp.png" alt="WA"> 011-5041 9895
+    </a>
+  </div>
+</header>
+
+<nav class="nav-tabs">
+  <a href="wzry.html" class="nav-tab">
+    <img src="img/wzry.jpeg" onerror="this.style.display='none'" alt=""> 王者荣耀
+  </a>
+  <a href="hpjy.html" class="nav-tab">
+    <img src="img/hpjy.jpeg" onerror="this.style.display='none'" alt=""> 和平精英
+  </a>
+  <a href="wwqy.html" class="nav-tab">
+    <img src="img/wwqy.jpeg" onerror="this.style.display='none'" alt=""> 无畏契约
+  </a>
+  <a href="huanhui.html" class="nav-tab">💱 人民币换汇</a>
+  <a href="taoxian.html" class="nav-tab active">💸 套现</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-icon">💸</div>
+  <div>
+    <h2>套现</h2>
+    <p>付款额 → 手续费 → 到手数额</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="calc-card">
+  <h3>💸 套现计算器</h3>
+  <div class="calc-row">
+    <div class="calc-field">
+      <label>付款数额 (RM)</label>
+      <input type="number" id="rm-input" value="500" min="1" oninput="calcCashout()">
+    </div>
+    <div class="calc-field">
+      <label>付款方式</label>
+      <select id="method-select" onchange="calcCashout()">
+        <option value="shopee_high" selected>Shopee Pay Later (≥RM500) — 20%</option>
+        <option value="shopee_mid">Shopee Pay Later (RM200–RM499) — 22%</option>
+        <option value="shopee_low">Shopee Pay Later (&lt;RM200) — 25%</option>
+        <option value="grab">Grab Pay Later — 25%</option>
+        <option value="boost">Boost Pay Flex — 10%</option>
+        <option value="ryt">Ryt Pay Later — 10%</option>
+        <option value="atome_pl">Atome Pay Later — 30%</option>
+        <option value="atome_card">Atome Card — 20%</option>
+        <option value="aha">Aha Pay Later — 30%</option>
+      </select>
+    </div>
+  </div>
+  <div class="calc-result">
+    <div class="calc-result-row">
+      <span class="label">手续费率</span>
+      <span class="value" id="rate-display">20%</span>
+    </div>
+    <div class="calc-result-row">
+      <span class="label">手续费</span>
+      <span class="value" id="fee-display">RM 100.00</span>
+    </div>
+    <div class="calc-result-row">
+      <span class="label">到手数额</span>
+      <span class="value yellow" id="net-display">RM 400.00</span>
+    </div>
+  </div>
+</div>
+
+<div style="padding: 0 20px 10px; font-size:12px; font-weight:600; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase;">支持平台</div>
+
+<div class="cashout-methods">
+
+  <!-- Shopee -->
+  <div class="cashout-method" style="cursor:pointer" onclick="openDetail('shopee')">
+    <div class="method-header">
+      <div class="method-icon-placeholder">
+        <img src="img/shopee.png" onerror="this.style.display='none';this.parentElement.textContent='🛍'" alt="Shopee">
+      </div>
+      <div style="flex:1">
+        <div class="name">Shopee Pay Later <span class="detail-link">点击查看详情 ›</span></div>
+        <div class="tags">
+          <span class="tag tag-pink">低于 RM200 — 25%</span>
+          <span class="tag tag-yellow">RM200–RM499 — 22%</span>
+          <span class="tag tag-green">RM500 以上 — 20%</span>
+        </div>
+        <div class="tag-warning">⚠ Additional Limit Boost 不可套现，只套 Permanent Limit</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grab -->
+  <div class="cashout-method" style="cursor:pointer" onclick="openDetail('grab')">
+    <div class="method-header">
+      <div class="method-icon-placeholder">
+        <img src="img/grab.png" onerror="this.style.display='none';this.parentElement.textContent='🚗'" alt="Grab">
+      </div>
+      <div style="flex:1">
+        <div class="name">Grab Pay Later <span class="detail-link">点击查看详情 ›</span></div>
+        <div class="tags">
+          <span class="tag tag-pink">统一 — 25%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boost -->
+  <div class="cashout-method" style="cursor:pointer" onclick="openDetail('boost')">
+    <div class="method-header">
+      <div class="method-icon-placeholder">
+        <img src="img/boost.png" onerror="this.style.display='none';this.parentElement.textContent='⚡'" alt="Boost">
+      </div>
+      <div style="flex:1">
+        <div class="name">Boost Pay Flex <span class="detail-link">点击查看详情 ›</span></div>
+        <div class="tags">
+          <span class="tag tag-green">统一 — 10%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ryt -->
+  <div class="cashout-method">
+    <div class="method-header">
+      <div class="method-icon-placeholder">
+        <img src="img/ryt.png" onerror="this.style.display='none';this.parentElement.textContent='💧'" alt="Ryt">
+      </div>
+      <div>
+        <div class="name">Ryt Pay Later</div>
+        <div class="tags">
+          <span class="tag tag-green">统一 — 10%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Atome (Pay Later + Card 归类在一起) -->
+  <div class="cashout-method" style="cursor:pointer" onclick="openDetail('atome_pl')">
+    <div class="method-header">
+      <div class="method-icon-placeholder">
+        <img src="img/atome.png" onerror="this.style.display='none';this.parentElement.textContent='🍊'" alt="Atome">
+      </div>
+      <div style="flex:1">
+        <div class="name">Atome Pay Later <span class="detail-link">点击查看详情 ›</span></div>
+        <div class="tags">
+          <span class="tag tag-pink">统一 — 30%</span>
+        </div>
+        <div class="tag-warning">⚠ 有显示才有 limit · 星期六日不能套现 Pay Later</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cashout-method" style="cursor:pointer" onclick="openDetail('atome_card')">
+    <div class="method-header">
+      <div class="method-icon-placeholder">
+        <img src="img/atome.png" onerror="this.style.display='none';this.parentElement.textContent='🍊'" alt="Atome">
+      </div>
+      <div style="flex:1">
+        <div class="name">Atome Card <span class="detail-link">点击查看详情 ›</span></div>
+        <div class="tags">
+          <span class="tag tag-yellow">统一 — 20%</span>
+        </div>
+        <div class="tag-warning">⚠ 有显示才有 limit</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aha -->
+  <div class="cashout-method">
+    <div class="method-header">
+      <div class="method-icon-placeholder">
+        <img src="img/aha.png" onerror="this.style.display='none';this.parentElement.textContent='🟠'" alt="Aha">
+      </div>
+      <div>
+        <div class="name">Aha Pay Later</div>
+        <div class="tags">
+          <span class="tag tag-pink">统一 — 30%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="height:20px"></div>
+
+<div style="margin: 0 20px 20px; display:flex; flex-direction:column; gap:10px;">
+  <button onclick="goCheckout()" style="width:100%;padding:15px;background:linear-gradient(135deg,#ff4d8d,#e0357a);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px var(--pink-glow);font-family:inherit;letter-spacing:0.4px;">
+    ✅ 立即结算套现
+  </button>
+  <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E5%92%A8%E8%AF%A2%E5%A5%97%E7%8E%B0%E6%9C%8D%E5%8A%A1" target="_blank" style="display:block;padding:13px;background:transparent;color:var(--text-dim);border:1px solid var(--border);border-radius:14px;text-decoration:none;font-size:14px;font-weight:600;text-align:center;">
+    💬 联系客服咨询
+  </a>
+</div>
+
+<!-- ── 详情弹窗 ── -->
+<div id="detailModal" onclick="if(event.target===this)closeDetail()">
+  <div id="detailSheet">
+    <div class="detail-sheet-header">
+      <div class="detail-sheet-title" id="detailTitle"></div>
+      <button class="detail-sheet-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-sheet-body" id="detailBody"></div>
+  </div>
+</div>
+
+<script src="cart.js"></script>
+<script>
+const feeRates = {
+  shopee_low:  25,
+  shopee_mid:  22,
+  shopee_high: 20,
+  grab:        25,
+  boost:       10,
+  ryt:         10,
+  atome_pl:    30,
+  atome_card:  20,
+  aha:         30
+};
+
+const methodNames = {
+  shopee_low:  'Shopee Pay Later (<RM200)',
+  shopee_mid:  'Shopee Pay Later (RM200–RM499)',
+  shopee_high: 'Shopee Pay Later (≥RM500)',
+  grab:        'Grab Pay Later',
+  boost:       'Boost Pay Flex',
+  ryt:         'Ryt Pay Later',
+  atome_pl:    'Atome Pay Later',
+  atome_card:  'Atome Card',
+  aha:         'Aha Pay Later'
+};
+
+function calcCashout() {
+  const rm     = parseFloat(document.getElementById('rm-input').value) || 0;
+  const select = document.getElementById('method-select');
+  let key      = select.value;
+  if (key === 'shopee_low' || key === 'shopee_mid' || key === 'shopee_high') {
+    const autoKey = rm >= 500 ? 'shopee_high' : rm >= 200 ? 'shopee_mid' : 'shopee_low';
+    if (key !== autoKey) { select.value = autoKey; key = autoKey; }
+  }
+  const rate = feeRates[key] || 20;
+  const fee  = rm * rate / 100;
+  const net  = rm - fee;
+  document.getElementById('rate-display').textContent = rate + '%';
+  document.getElementById('fee-display').textContent  = 'RM ' + fee.toFixed(2);
+  document.getElementById('net-display').textContent  = 'RM ' + net.toFixed(2);
+}
+
+function goCheckout() {
+  const rm     = parseFloat(document.getElementById('rm-input').value) || 0;
+  const select = document.getElementById('method-select');
+  let key      = select.value;
+  if (!rm || rm <= 0) { alert('请先输入付款数额！'); return; }
+  if (!key)           { alert('请先选择付款方式！'); return; }
+  if (key === 'shopee_low' || key === 'shopee_mid' || key === 'shopee_high') {
+    key = rm >= 500 ? 'shopee_high' : rm >= 200 ? 'shopee_mid' : 'shopee_low';
+  }
+  const rate  = feeRates[key] || 0;
+  const fee   = rm * rate / 100;
+  const net   = rm - fee;
+  const label = methodNames[key] || key;
+  window.location.href = `taoxiancart.html?rm=${rm.toFixed(2)}&fee=${fee.toFixed(2)}&net=${net.toFixed(2)}&rate=${rate}&method=${encodeURIComponent(label)}`;
+}
+
+// ── 详情弹窗内容定义 ──
+const detailData = {
+  shopee: {
+    title: '🛍 Shopee Pay Later',
+    img: 'img/shopee_detail.jpeg',
+    note: `⚠️ <strong>备注：</strong>Additional Limit Boost 不可以套现，只可以套现 Permanent Limit。`
+  },
+  grab: {
+    title: '🚗 Grab Pay Later',
+    img: 'img/grab_detail.jpeg',
+    note: `⚠️ <strong>Grab Cash Out 须知</strong> ⚠️<br><br>
+           Grab Cash Out 分为两种方式：<br><br>
+           <strong>1️⃣ Postpaid</strong><br>
+           📌 需要在下个月一次性还清<br><br>
+           <strong>2️⃣ 分期（1 / 4 / 12 个月）</strong><br>
+           📌 必须先自行 Top Up 第一期金额`
+  },
+  boost: {
+    title: '⚡ Boost Pay Flex',
+    img: 'img/boost_detail.jpeg',
+    note: ``
+  },
+  atome_pl: {
+    title: '🍊 Atome Pay Later',
+    img: 'img/atome_pl_detail.jpeg',
+    note: `⚠️ <strong>备注：</strong>Atome Pay Later 和 Atome Card，有显示才有 limit。<br>
+           星期六和星期日不能套现 Atome Pay Later。`
+  },
+  atome_card: {
+    title: '🍊 Atome Card',
+    img: 'img/atome_card_detail.jpeg',
+    note: `⚠️ <strong>备注：</strong>Atome Pay Later 和 Atome Card，有显示才有 limit。`
+  }
+};
+
+function openDetail(key) {
+  const d = detailData[key];
+  if (!d) return;
+  document.getElementById('detailTitle').textContent = d.title;
+  document.getElementById('detailBody').innerHTML = `
+    <img class="detail-img" src="${d.img}" alt="${d.title}" onerror="this.style.display='none'">
+    ${d.note ? `<div class="detail-note">${d.note}</div>` : ''}
+  `;
+  document.getElementById('detailModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detailModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('DOMContentLoaded', calcCashout);
+</script>
+</body>
+</html>

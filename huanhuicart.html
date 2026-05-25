@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>换汇结算 - JACKSON充值中心</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+
+.page-wrap {
+  padding: 16px 20px 100px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* ── 换汇摘要卡 ── */
+.exchange-summary {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.exchange-summary-header {
+  background: linear-gradient(135deg, #ff4d8d22, #e0357a11);
+  border-bottom: 1px solid var(--border);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.exchange-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.exchange-row:last-child { border-bottom: none; }
+.exchange-row .label { color: var(--text-dim); }
+.exchange-row .value { font-weight: 700; color: var(--text); }
+.exchange-row .value.highlight { color: var(--pink-lite); font-size: 16px; }
+.exchange-row .value.green { color: var(--green); font-size: 15px; }
+
+/* ── 表单区 ── */
+.form-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.form-section-header {
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-body { padding: 16px; }
+
+.f-field {
+  margin-bottom: 14px;
+}
+.f-field:last-child { margin-bottom: 0; }
+
+.f-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 7px;
+  letter-spacing: 0.3px;
+}
+
+.f-field .req { color: var(--pink-lite); margin-left: 2px; }
+
+.f-field input,
+.f-field select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--text);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.f-field input:focus,
+.f-field select:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px var(--pink-glow);
+}
+
+.f-field input[readonly] {
+  opacity: 0.65;
+  cursor: default;
+  background: var(--bg);
+}
+
+/* select 箭头 */
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '›';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  color: var(--text-dim);
+  pointer-events: none;
+  font-size: 16px;
+}
+
+/* 支付宝账号字段动态显示 */
+#alipay-field { display: none; }
+
+/* ── 提示条 ── */
+.info-banner {
+  background: rgba(255,77,141,0.08);
+  border: 1px solid rgba(255,77,141,0.25);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.65;
+  margin-bottom: 18px;
+  display: flex;
+  gap: 8px;
+}
+.info-banner .icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── 复制框 ── */
+.copy-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.copy-box-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+.copy-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.85;
+  white-space: pre-wrap;
+  font-family: monospace;
+  padding: 14px;
+  margin: 0;
+}
+
+.copy-btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #ff4d8d, #e0357a);
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+  letter-spacing: 0.3px;
+  font-family: inherit;
+}
+.copy-btn:active { opacity: 0.85; }
+.copy-btn.copied { background: linear-gradient(135deg, #34c759, #28a745); }
+
+/* ── 联系快捷按钮 ── */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.2s, transform 0.15s;
+}
+.contact-link:hover  { border-color: var(--pink); transform: translateX(2px); }
+.contact-link:active { transform: scale(0.98); }
+
+.contact-icon {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.contact-info strong { font-size: 14px; font-weight: 700; display: block; margin-bottom: 2px; }
+.contact-info span   { font-size: 12px; color: var(--text-dim); }
+.contact-arrow { margin-left: auto; color: var(--text-dim); font-size: 16px; }
+
+/* ── 提交 / 返回按钮 ── */
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff4d8d, #e0357a);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 24px var(--pink-glow);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-bottom: 10px;
+  font-family: inherit;
+}
+.submit-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+.back-btn {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  font-family: inherit;
+  margin-bottom: 0;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.back-btn:hover { border-color: var(--pink); color: var(--text); }
+
+/* ── 成功页 ── */
+#success-view { display: none; }
+#form-view    { display: block; }
+
+.success-hero {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.success-checkmark {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  font-size: 30px;
+  color: var(--pink-lite);
+  position: relative; overflow: hidden;
+}
+.success-checkmark::before {
+  content: '';
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid var(--pink);
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0;   }
+}
+.success-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.success-sub   { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+/* ── 购物车底栏保留样式 ── */
+.cart-bar { display: none; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1><span class="bolt">⚡</span> JACKSON充值中心</h1>
+  <p class="tagline">游戏充值 · 快速安全</p>
+  <div class="header-contacts">
+    <a href="https://m.me/JacksonLing" target="_blank">
+      <img src="img/facebook.png" alt="FB"> Jackson Ling
+    </a>
+    <a href="javascript:void(0)" onclick="openWechat()">
+      <img src="img/wechat.png" alt="WeChat"> jackson66399
+    </a>
+    <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E5%92%A8%E8%AF%A2%E4%BA%BA%E6%B0%91%E5%B8%81%E5%85%91%E6%8D%A2%E6%9C%8D%E5%8A%A1" target="_blank">
+      <img src="img/whatsapp.png" alt="WA"> 011-5041 9895
+    </a>
+  </div>
+</header>
+
+<nav class="nav-tabs">
+  <a href="wzry.html" class="nav-tab">
+    <img src="img/wzry.jpeg" onerror="this.style.display='none'" alt=""> 王者荣耀
+  </a>
+  <a href="hpjy.html" class="nav-tab">
+    <img src="img/hpjy.jpeg" onerror="this.style.display='none'" alt=""> 和平精英
+  </a>
+  <a href="wwqy.html" class="nav-tab">
+    <img src="img/wwqy.jpeg" onerror="this.style.display='none'" alt=""> 无畏契约
+  </a>
+  <a href="huanhui.html" class="nav-tab active">💱 人民币换汇</a>
+  <a href="taoxian.html" class="nav-tab">💸 套现</a>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- ══════════ 表单视图 ══════════ -->
+  <div id="form-view">
+
+    <!-- 换汇摘要 -->
+    <div class="exchange-summary">
+      <div class="exchange-summary-header">💱 换汇摘要</div>
+      <div class="exchange-row">
+        <span class="label">马币金额</span>
+        <span class="value highlight" id="sum-rm">RM —</span>
+      </div>
+      <div class="exchange-row">
+        <span class="label">收款方式</span>
+        <span class="value" id="sum-method">—</span>
+      </div>
+      <div class="exchange-row">
+        <span class="label">适用汇率</span>
+        <span class="value" id="sum-rate">—</span>
+      </div>
+      <div class="exchange-row">
+        <span class="label">可得人民币</span>
+        <span class="value green" id="sum-cny">¥ —</span>
+      </div>
+    </div>
+
+    <!-- 提示 -->
+    <div class="info-banner">
+      <span class="icon">💡</span>
+      <span>请填写以下信息后提交，我们收到后会尽快安排换汇，完成后通知您。</span>
+    </div>
+
+    <!-- 个人信息表单 -->
+    <div class="form-section">
+      <div class="form-section-header">👤 填写信息</div>
+      <div class="form-body">
+
+        <div class="f-field">
+          <label>您的姓名<span class="req">*</span></label>
+          <input type="text" id="f-name" placeholder="请输入真实姓名">
+        </div>
+
+        <div class="f-field">
+          <label>收款方式</label>
+          <input type="text" id="f-paytype-display" readonly style="opacity:0.85;cursor:default;background:var(--bg);">
+          <input type="hidden" id="f-paytype">
+        </div>
+
+        <!-- 账号输入（支付宝/微信根据方式自动切换标签） -->
+        <div class="f-field" id="alipay-field">
+          <label id="account-label">支付宝账号<span class="req">*</span></label>
+          <input type="text" id="f-alipay" placeholder="请输入支付宝账号（手机号或邮箱）">
+        </div>
+
+        <!-- 人民币到手（只读，自动填入） -->
+        <div class="f-field">
+          <label>可得人民币（自动填入）</label>
+          <input type="text" id="f-cny" readonly placeholder="—">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 提交按钮 -->
+    <button class="submit-btn" onclick="submitExchange()">✅ 提交换汇订单</button>
+    <a href="huanhui.html" class="back-btn">← 返回修改金额</a>
+
+  </div><!-- /form-view -->
+
+
+  <!-- ══════════ 成功视图 ══════════ -->
+  <div id="success-view">
+
+    <div class="success-hero">
+      <div class="success-checkmark">✓</div>
+      <div class="success-title">换汇订单已提交！</div>
+      <div class="success-sub">请复制以下信息，通过任一方式发给我们，并附上付款截图。</div>
+    </div>
+
+    <!-- 复制框 -->
+    <div class="copy-box">
+      <div class="copy-box-header">📋 复制订单信息</div>
+      <pre class="copy-text" id="copyText">正在生成...</pre>
+      <button class="copy-btn" id="copyBtn" onclick="copyOrder()">📋 复制订单信息</button>
+    </div>
+
+    <!-- 联系方式 -->
+    <div class="contact-links" id="contactLinks"></div>
+
+    <!-- 完成按钮 -->
+    <a href="index.html" class="submit-btn" style="text-decoration:none;margin-top:4px">✅ 完成</a>
+    <a href="huanhui.html" class="back-btn" style="margin-top:10px">← 返回换汇页</a>
+
+  </div><!-- /success-view -->
+
+</div><!-- /page-wrap -->
+
+<script>
+// ─── 从 URL 参数读取换汇信息 ───────────────────────────────────────────────
+const params  = new URLSearchParams(window.location.search);
+const rmAmt   = parseFloat(params.get('rm'))   || 0;
+const cnyAmt  = parseFloat(params.get('cny'))  || 0;
+const rate    = parseFloat(params.get('rate')) || 0;
+const method  = params.get('method') || '';   // 'alipay' | 'wechat'
+
+const methodLabel = method === 'alipay' ? '支付宝' : method === 'wechat' ? '微信支付' : '—';
+
+// ─── 填入摘要 ─────────────────────────────────────────────────────────────
+function initSummary() {
+  document.getElementById('sum-rm').textContent     = rmAmt   ? 'RM ' + rmAmt.toFixed(2)   : 'RM —';
+  document.getElementById('sum-method').textContent = methodLabel;
+  document.getElementById('sum-rate').textContent   = rate    ? rate.toFixed(2)             : '—';
+  document.getElementById('sum-cny').textContent    = cnyAmt  ? '¥ ' + cnyAmt.toFixed(2)   : '¥ —';
+  document.getElementById('f-cny').value            = cnyAmt  ? '¥ ' + cnyAmt.toFixed(2)   : '';
+
+  // 自动设置收款方式显示（只读）
+  if (method === 'alipay' || method === 'wechat') {
+    document.getElementById('f-paytype').value = method;
+    const display = method === 'alipay' ? '支付宝' : '微信支付';
+    document.getElementById('f-paytype-display').value = display;
+    // 更新账号输入栏标签和提示
+    if (method === 'alipay') {
+      document.getElementById('account-label').innerHTML = '支付宝账号<span class="req">*</span>';
+      document.getElementById('f-alipay').placeholder = '请输入支付宝账号（手机号或邮箱）';
+    } else {
+      document.getElementById('account-label').innerHTML = '微信账号<span class="req">*</span>';
+      document.getElementById('f-alipay').placeholder = '请输入微信号';
+    }
+    document.getElementById('alipay-field').style.display = 'block';
+  }
+}
+
+// ─── 提交订单 ─────────────────────────────────────────────────────────────
+function submitExchange() {
+  const name    = document.getElementById('f-name').value.trim();
+  const paytype = document.getElementById('f-paytype').value;
+  const alipay  = document.getElementById('f-alipay').value.trim();
+
+  if (!rmAmt || !cnyAmt) {
+    alert('⚠️ 未检测到换汇金额，请从换汇页重新进入。');
+    window.location.href = 'huanhui.html';
+    return;
+  }
+  if (!name)    { alert('请填写您的姓名！');     return; }
+  if (!paytype) { alert('请重新从换汇页进入！'); return; }
+  if (!alipay) {
+    alert(paytype === 'alipay' ? '请填写支付宝账号！' : '请填写微信账号！');
+    return;
+  }
+
+  const paytypeLabel = paytype === 'alipay' ? '支付宝' : '微信';
+  const accountLabel = paytype === 'alipay' ? '支付宝账号' : '微信账号';
+
+  // 构建订单文本
+  const lines = [
+    '💱 *换汇订单*',
+    '',
+    `💰 马币金额: RM ${rmAmt.toFixed(2)}`,
+    `📊 收款方式: ${methodLabel}`,
+    `📈 适用汇率: ${rate.toFixed(2)}`,
+    `🀄 可得人民币: ¥ ${cnyAmt.toFixed(2)}`,
+    '',
+    `👤 姓名: ${name}`,
+    `💳 收款方式: ${paytypeLabel}`,
+    `📱 ${accountLabel}: ${alipay}`,
+  ].join('\n');
+
+  // 显示结果
+  document.getElementById('copyText').textContent = lines;
+
+  // 联系链接
+    const waUrl = `https://wa.me/601150419895?text=${encodeURIComponent(lines)}`;
+  document.getElementById('contactLinks').innerHTML = `
+    <a class="contact-link" href="${waUrl}" target="_blank">
+      <div class="contact-icon" style="background:#25D366;overflow:hidden;padding:0"><img src="img/whatsapp.png" alt="WA" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div class="contact-info">
+        <strong>WhatsApp</strong>
+        <span>011-5041 9895</span>
+      </div>
+      <span class="contact-arrow">›</span>
+    </a>
+    <a class="contact-link" href="https://m.me/JacksonLing" target="_blank">
+      <div class="contact-icon" style="background:#1877F2;overflow:hidden;padding:0"><img src="img/facebook.png" alt="FB" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div class="contact-info">
+        <strong>Facebook</strong>
+        <span>Jackson Ling</span>
+      </div>
+      <span class="contact-arrow">›</span>
+    </a>
+    <a class="contact-link" href="javascript:void(0)" onclick="openWechat()">
+      <div class="contact-icon" style="background:#07C160;overflow:hidden;padding:0"><img src="img/wechat.png" alt="WeChat" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div class="contact-info">
+        <strong>微信</strong>
+        <span>jackson66399</span>
+      </div>
+      <span class="contact-arrow">›</span>
+    </a>`;
+
+  // 切换视图
+  document.getElementById('form-view').style.display    = 'none';
+  document.getElementById('success-view').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── 复制订单 ─────────────────────────────────────────────────────────────
+function copyOrder() {
+  const el  = document.getElementById('copyText');
+  const btn = document.getElementById('copyBtn');
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✅ 已复制！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 复制订单信息'; btn.classList.remove('copied'); }, 2500);
+  }).catch(() => {
+    const r = document.createRange();
+    r.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+    document.execCommand('copy');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initSummary);
+
+// ── WeChat 弹窗 ──────────────────────────────────────────────────────────
+function openWechat() {
+  const wxId = 'jackson66399';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(wxId).catch(()=>{});
+  } else {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = wxId; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+    } catch(e){}
+  }
+  let modal = document.getElementById('wechatModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'wechatModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+    modal.innerHTML = `
+      <div style="background:var(--bg2,#1a1a2e);border:1px solid var(--border,#2a2a3e);border-radius:20px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+        <div style="width:56px;height:56px;border-radius:50%;background:#07C160;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 16px"><img src="img/wechat.png" style="width:100%;height:100%;object-fit:cover" alt="WeChat"></div>
+        <div style="font-size:17px;font-weight:800;color:var(--text,#fff);margin-bottom:6px">添加微信</div>
+        <div style="font-size:13px;color:var(--text-dim,#aaa);margin-bottom:16px">微信号已复制到剪贴板</div>
+        <div style="background:var(--bg3,#0d0d1a);border:1px solid var(--border,#2a2a3e);border-radius:12px;padding:14px 16px;margin-bottom:18px">
+          <div style="font-size:22px;font-weight:800;letter-spacing:1px;color:#ff6eb0">${wxId}</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-dim,#aaa);margin-bottom:18px;line-height:1.6">请打开微信 → 搜索以上微信号 → 添加好友</div>
+        <button id="wechatCopyBtn" onclick="(function(){
+          if(navigator.clipboard){navigator.clipboard.writeText('jackson66399').catch(()=>{})}
+          var b=document.getElementById('wechatCopyBtn');
+          b.textContent='✅ 已复制！';b.style.background='linear-gradient(135deg,#34c759,#28a745)';
+          setTimeout(function(){b.textContent='📋 再次复制微信号';b.style.background='';},2000);
+        })()" style="width:100%;padding:12px;background:linear-gradient(135deg,#07C160,#05a050);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;font-family:inherit">📋 再次复制微信号</button>
+        <button onclick="document.getElementById('wechatModal').style.display='none'" style="width:100%;padding:11px;background:transparent;border:1px solid var(--border,#2a2a3e);color:var(--text-dim,#aaa);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">关闭</button>
+      </div>`;
+    modal.addEventListener('click', function(e){ if(e.target===modal) modal.style.display='none'; });
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display = 'flex';
+    const btn = document.getElementById('wechatCopyBtn');
+    if(btn){ btn.textContent='📋 再次复制微信号'; btn.style.background=''; }
+  }
+}
+</script>
+</body>
+</html>
