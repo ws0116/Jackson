@@ -9,44 +9,102 @@
 <title>无畏契约充值 - JACKSON充值中心</title>
 <link rel="stylesheet" href="styles.css">
 <script>window.addEventListener("unload",function(){});window.addEventListener("pageshow",function(e){if(e.persisted){window.location.reload(true);}});</script>
+<style>
+.admin-icon-wrap2 {
+  position: relative; width: 44px; height: 44px; flex-shrink: 0;
+  cursor: pointer; user-select: none;
+  -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.admin-icon-inner2 {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--bg3); display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.admin-icon-inner2 img { width: 100%; height: 100%; border-radius: 10px; object-fit: cover; }
+.admin-ring-svg2 {
+  position: absolute; inset: -5px;
+  width: calc(100% + 10px); height: calc(100% + 10px);
+  pointer-events: none; opacity: 0; transition: opacity 0.15s;
+}
+.admin-icon-wrap2.pressing .admin-ring-svg2 { opacity: 1; }
+.admin-ring-circle2 { fill: none; stroke: #ff4d8d; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 0 200; }
+.admin-panel2 {
+  display: none; margin: 0 20px 16px;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;
+}
+.admin-panel2.open { display: block; }
+.admin-panel2 h4 { margin: 0 0 4px; font-size: 13px; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+.admin-panel2 .ap2-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 12px; }
+.ap2-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.ap2-row:last-child { border-bottom: none; }
+.ap2-label { font-size: 13px; color: var(--text); flex: 1; }
+.ap2-inputs { display: flex; align-items: center; gap: 4px; }
+.ap2-rm { font-size: 12px; color: var(--text-dim); }
+.ap2-input {
+  width: 72px; padding: 6px 8px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text); font-size: 13px; font-weight: 700; font-family: inherit; text-align: right;
+}
+.ap2-input:focus { border-color: var(--pink); outline: none; }
+.ap2-btn-row { display: flex; gap: 8px; margin-top: 14px; }
+.ap2-btn-row button { flex: 1; padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; border: none; }
+#ap2-apply-btn { background: linear-gradient(135deg,#ff4d8d,#e0357a); color: #fff; }
+#ap2-reset-btn { background: transparent; border: 1px solid var(--border) !important; color: var(--text-dim); }
+.pw-modal2 {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px); z-index: 9999;
+  display: none; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
+}
+.pw-modal2-inner {
+  background: var(--bg2,#1a1a2e); border: 1px solid var(--border,#2a2a3e);
+  border-radius: 20px; padding: 28px 24px; max-width: 320px; width: 100%; text-align: center;
+}
+.pw-modal2-inner h3 { margin: 0 0 6px; font-size: 17px; color: var(--text); }
+.pw-modal2-inner p  { margin: 0 0 16px; font-size: 13px; color: var(--text-dim); }
+.pw-modal2-inner input {
+  width: 100%; box-sizing: border-box; padding: 12px 14px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+  font-size: 16px; color: var(--text); font-family: inherit;
+  margin-bottom: 10px; text-align: center; letter-spacing: 2px;
+}
+.pw-modal2-inner input:focus { border-color: var(--pink); outline: none; }
+.pw-error2 { display: none; color: #ff6b6b; font-size: 12px; margin-bottom: 10px; }
+.pw-modal2-btns { display: flex; gap: 8px; }
+.pw-modal2-btns button { flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; border: none; }
+.pw-modal2-btns .pw-submit { background: linear-gradient(135deg,#ff4d8d,#e0357a); color: #fff; }
+.pw-modal2-btns .pw-cancel { background: transparent; border: 1px solid var(--border) !important; color: var(--text-dim); }
+</style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="site-header">
   <h1><span class="bolt">⚡</span> JACKSON充值中心</h1>
   <p class="tagline">游戏充值 · 快速安全</p>
   <div class="header-contacts">
-    <a href="https://m.me/JacksonLing" target="_blank">
-      <img src="img/facebook.png" alt="FB"> Jackson Ling
-    </a>
-    <a href="javascript:void(0)" onclick="openWechat()">
-      <img src="img/wechat.png" alt="WeChat"> jackson66399
-    </a>
-    <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E5%92%A8%E8%AF%A2%E6%B8%B8%E6%88%8F%E5%85%85%E5%80%BC%E6%9C%8D%E5%8A%A1" target="_blank">
-      <img src="img/whatsapp.png" alt="WA"> 011-5041 9895
-    </a>
+    <a href="https://m.me/JacksonLing" target="_blank"><img src="img/facebook.png" alt="FB"> Jackson Ling</a>
+    <a href="javascript:void(0)" onclick="openWechat()"><img src="img/wechat.png" alt="WeChat"> jackson66399</a>
+    <a href="https://wa.me/601150419895?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E5%92%A8%E8%AF%A2%E6%B8%B8%E6%88%8F%E5%85%85%E5%80%BC%E6%9C%8D%E5%8A%A1" target="_blank"><img src="img/whatsapp.png" alt="WA"> 011-5041 9895</a>
   </div>
 </header>
 
 <nav class="nav-tabs">
-  <a href="wzry.html" class="nav-tab">
-    <img src="img/wzry.jpeg" onerror="this.style.display='none'" alt=""> 王者荣耀
-  </a>
-  <a href="hpjy.html" class="nav-tab">
-    <img src="img/hpjy.jpeg" onerror="this.style.display='none'" alt=""> 和平精英
-  </a>
-  <a href="wwqy.html" class="nav-tab active">
-    <img src="img/wwqy.jpeg" onerror="this.style.display='none'" alt=""> 无畏契约
-  </a>
+  <a href="wzry.html" class="nav-tab"><img src="img/wzry.jpeg" onerror="this.style.display='none'" alt=""> 王者荣耀</a>
+  <a href="hpjy.html" class="nav-tab"><img src="img/hpjy.jpeg" onerror="this.style.display='none'" alt=""> 和平精英</a>
+  <a href="wwqy.html" class="nav-tab active"><img src="img/wwqy.jpeg" onerror="this.style.display='none'" alt=""> 无畏契约</a>
   <a href="huanhui.html" class="nav-tab">💱 人民币换汇</a>
   <a href="taoxian.html" class="nav-tab">💸 套现</a>
 </nav>
 
-<!-- SECTION TITLE -->
 <div class="section-title">
-  <div style="width:44px;height:44px;border-radius:10px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">
-    <img src="img/wwqy.jpeg" onerror="this.parentElement.textContent='🎯'" style="width:100%;height:100%;border-radius:10px;object-fit:cover" alt="">
+  <div class="admin-icon-wrap2" id="admin-icon2"
+       onmousedown="startPress2()" onmouseup="cancelPress2()" onmouseleave="cancelPress2()"
+       ontouchstart="startPress2(event)" ontouchend="cancelPress2()" ontouchcancel="cancelPress2()">
+    <div class="admin-icon-inner2">
+      <img src="img/wwqy.jpeg" onerror="this.parentElement.textContent='🎯'" alt="">
+    </div>
+    <svg class="admin-ring-svg2" viewBox="0 0 54 54" id="ring-svg2">
+      <rect x="2" y="2" width="50" height="50" rx="12" ry="12"
+            class="admin-ring-circle2" id="ring-circle2" style="stroke-dashoffset:0;"/>
+    </svg>
   </div>
   <div class="info">
     <h2>无畏契约</h2>
@@ -54,78 +112,193 @@
   </div>
 </div>
 
+<div class="admin-panel2" id="admin-panel2">
+  <h4>⚙️ 价格管理</h4>
+  <div class="ap2-sub">长按图标解锁 · 修改后点击应用</div>
+  <div id="ap2-rows"></div>
+  <div class="ap2-btn-row">
+    <button id="ap2-apply-btn" onclick="applyPrices2()">✅ 应用价格</button>
+    <button id="ap2-reset-btn" onclick="resetPrices2()">🔄 重置默认</button>
+  </div>
+</div>
+
+<div class="pw-modal2" id="pw-modal2">
+  <div class="pw-modal2-inner">
+    <h3>🔐 管理员验证</h3>
+    <p>请输入管理密码</p>
+    <input type="password" id="pw-input2" placeholder="密码">
+    <div class="pw-error2" id="pw-error2">❌ 密码错误，请重试</div>
+    <div class="pw-modal2-btns">
+      <button class="pw-submit" onclick="submitPassword2()">确认</button>
+      <button class="pw-cancel" onclick="closePwModal2()">取消</button>
+    </div>
+  </div>
+</div>
+
 <div class="divider"></div>
 
-<!-- PRODUCT LIST -->
 <div class="product-grid">
   <div class="product-card" data-id="wwqy-60" onclick="addToCart('wwqy-60','无畏契约','60 点卷',4)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">60 点卷</div>
-    <div class="price">RM 4</div>
+    <div class="badge" style="display:none">0</div><div class="pts">60 点卷</div><div class="price">RM 4</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-60')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-60','无畏契约','60 点卷',4)">+</button></div>
   </div>
   <div class="product-card" data-id="wwqy-100" onclick="addToCart('wwqy-100','无畏契约','100 点卷',7)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">100 点卷</div>
-    <div class="price">RM 7</div>
+    <div class="badge" style="display:none">0</div><div class="pts">100 点卷</div><div class="price">RM 7</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-100')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-100','无畏契约','100 点卷',7)">+</button></div>
   </div>
   <div class="product-card" data-id="wwqy-308" onclick="addToCart('wwqy-308','无畏契约','308 点卷',20)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">308 点卷</div>
-    <div class="price">RM 20</div>
+    <div class="badge" style="display:none">0</div><div class="pts">308 点卷</div><div class="price">RM 20</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-308')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-308','无畏契约','308 点卷',20)">+</button></div>
   </div>
   <div class="product-card" data-id="wwqy-700" onclick="addToCart('wwqy-700','无畏契约','700 点卷',42)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">700 点卷</div>
-    <div class="price">RM 42</div>
+    <div class="badge" style="display:none">0</div><div class="pts">700 点卷</div><div class="price">RM 42</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-700')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-700','无畏契约','700 点卷',42)">+</button></div>
   </div>
   <div class="product-card" data-id="wwqy-1319" onclick="addToCart('wwqy-1319','无畏契约','1319 点卷',78)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">1319 点卷</div>
-    <div class="price">RM 78</div>
+    <div class="badge" style="display:none">0</div><div class="pts">1319 点卷</div><div class="price">RM 78</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-1319')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-1319','无畏契约','1319 点卷',78)">+</button></div>
   </div>
   <div class="product-card" data-id="wwqy-2060" onclick="addToCart('wwqy-2060','无畏契约','2060 点卷',119)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">2060 点卷</div>
-    <div class="price">RM 119</div>
+    <div class="badge" style="display:none">0</div><div class="pts">2060 点卷</div><div class="price">RM 119</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-2060')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-2060','无畏契约','2060 点卷',119)">+</button></div>
   </div>
   <div class="product-card" data-id="wwqy-3518" onclick="addToCart('wwqy-3518','无畏契约','3518 点卷',196)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">3518 点卷</div>
-    <div class="price">RM 196</div>
+    <div class="badge" style="display:none">0</div><div class="pts">3518 点卷</div><div class="price">RM 196</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-3518')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-3518','无畏契约','3518 点卷',196)">+</button></div>
   </div>
   <div class="product-card" data-id="wwqy-7218" onclick="addToCart('wwqy-7218','无畏契约','7218 点卷',385)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">7218 点卷</div>
-    <div class="price">RM 385</div>
+    <div class="badge" style="display:none">0</div><div class="pts">7218 点卷</div><div class="price">RM 385</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-7218')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-7218','无畏契约','7218 点卷',385)">+</button></div>
   </div>
   <div class="product-card" data-id="wwqy-pioneer" onclick="addToCart('wwqy-pioneer','无畏契约','先行卡 (扫码充值)',12)">
-    <div class="badge" style="display:none">0</div>
-    <div class="pts">先行卡</div>
-    <div class="price">RM 12</div>
+    <div class="badge" style="display:none">0</div><div class="pts">先行卡</div><div class="price">RM 12</div>
     <div class="card-controls"><button class="remove-btn" onclick="event.stopPropagation();removeFromCart('wwqy-pioneer')" style="display:none">−</button><span class="qty-num" style="display:none">0</span><button class="add-btn" onclick="event.stopPropagation();addToCart('wwqy-pioneer','无畏契约','先行卡 (扫码充值)',12)">+</button></div>
   </div>
 </div>
 
-<!-- STICKY CART BAR -->
 <div class="cart-bar">
   <div class="cart-info">
     <div class="cart-badge">0</div>
-    <div>
-      <div class="cart-label">购物车</div>
-      <div class="cart-total">RM 0.00</div>
-    </div>
+    <div><div class="cart-label">购物车</div><div class="cart-total">RM 0.00</div></div>
   </div>
   <a href="topupcart.html" class="checkout-btn">去结算 →</a>
 </div>
 
 <script src="cart.js"></script>
+<script>
+const PRODUCTS = [
+  {id:'wwqy-60',      pts:'60 点卷',           defaultPrice:4,   game:'无畏契约'},
+  {id:'wwqy-100',     pts:'100 点卷',           defaultPrice:7,   game:'无畏契约'},
+  {id:'wwqy-308',     pts:'308 点卷',           defaultPrice:20,  game:'无畏契约'},
+  {id:'wwqy-700',     pts:'700 点卷',           defaultPrice:42,  game:'无畏契约'},
+  {id:'wwqy-1319',    pts:'1319 点卷',          defaultPrice:78,  game:'无畏契约'},
+  {id:'wwqy-2060',    pts:'2060 点卷',          defaultPrice:119, game:'无畏契约'},
+  {id:'wwqy-3518',    pts:'3518 点卷',          defaultPrice:196, game:'无畏契约'},
+  {id:'wwqy-7218',    pts:'7218 点卷',          defaultPrice:385, game:'无畏契约'},
+  {id:'wwqy-pioneer', pts:'先行卡 (扫码充值)', defaultPrice:12,  game:'无畏契约'},
+];
+
+const PRESS_DURATION = 5000;
+let pressStart2 = null, rafId2 = null, adminUnlocked2 = false;
+const PERIMETER2 = 185;
+
+function startPress2(e) {
+  if (e) e.preventDefault();
+  if (pressStart2) return;
+  pressStart2 = Date.now();
+  document.getElementById('admin-icon2').classList.add('pressing');
+  function tick() {
+    const progress = Math.min((Date.now() - pressStart2) / PRESS_DURATION, 1);
+    document.getElementById('ring-circle2').style.strokeDasharray = (progress * PERIMETER2) + ' ' + PERIMETER2;
+    if (progress < 1) { rafId2 = requestAnimationFrame(tick); } else { finishPress2(); }
+  }
+  rafId2 = requestAnimationFrame(tick);
+}
+function cancelPress2() {
+  if (!pressStart2) return;
+  pressStart2 = null;
+  if (rafId2) { cancelAnimationFrame(rafId2); rafId2 = null; }
+  document.getElementById('admin-icon2').classList.remove('pressing');
+  document.getElementById('ring-circle2').style.strokeDasharray = '0 ' + PERIMETER2;
+}
+function finishPress2() {
+  cancelPress2();
+  if (adminUnlocked2) {
+    const panel = document.getElementById('admin-panel2');
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open')) renderAdminPrices2();
+  } else {
+    document.getElementById('pw-modal2').style.display = 'flex';
+    setTimeout(() => document.getElementById('pw-input2').focus(), 100);
+  }
+}
+function submitPassword2() {
+  const val = document.getElementById('pw-input2').value;
+  if (val === '011681abc') {
+    adminUnlocked2 = true;
+    document.getElementById('pw-modal2').style.display = 'none';
+    document.getElementById('pw-input2').value = '';
+    document.getElementById('pw-error2').style.display = 'none';
+    document.getElementById('admin-panel2').classList.add('open');
+    renderAdminPrices2();
+  } else {
+    document.getElementById('pw-error2').style.display = 'block';
+    document.getElementById('pw-input2').value = '';
+    document.getElementById('pw-input2').focus();
+  }
+}
+function closePwModal2() {
+  document.getElementById('pw-modal2').style.display = 'none';
+  document.getElementById('pw-input2').value = '';
+  document.getElementById('pw-error2').style.display = 'none';
+}
+function getStoredPrice(id, def) {
+  const v = localStorage.getItem('jp_price_' + id);
+  return v !== null ? parseFloat(v) : def;
+}
+function renderAdminPrices2() {
+  document.getElementById('ap2-rows').innerHTML = PRODUCTS.map(p => {
+    const cur = getStoredPrice(p.id, p.defaultPrice);
+    return `<div class="ap2-row">
+      <div class="ap2-label">🎯 ${p.pts}</div>
+      <div class="ap2-inputs"><span class="ap2-rm">RM</span>
+      <input class="ap2-input" type="number" min="0" step="0.5" value="${cur}" data-id="${p.id}"></div>
+    </div>`;
+  }).join('');
+}
+function applyPrices2() {
+  document.querySelectorAll('.ap2-input').forEach(input => {
+    const val = parseFloat(input.value);
+    if (!isNaN(val) && val >= 0) localStorage.setItem('jp_price_' + input.dataset.id, val.toFixed(2));
+  });
+  reloadPricesFromStorage();
+  const btn = document.getElementById('ap2-apply-btn');
+  btn.textContent = '✔ 已更新';
+  setTimeout(() => btn.textContent = '✅ 应用价格', 1500);
+}
+function resetPrices2() {
+  if (!confirm('确定要重置所有价格为默认值吗？')) return;
+  PRODUCTS.forEach(p => localStorage.removeItem('jp_price_' + p.id));
+  reloadPricesFromStorage(); renderAdminPrices2();
+}
+function reloadPricesFromStorage() {
+  PRODUCTS.forEach(p => {
+    const price = getStoredPrice(p.id, p.defaultPrice);
+    const card  = document.querySelector(`.product-card[data-id="${p.id}"]`);
+    if (!card) return;
+    const priceEl = card.querySelector('.price');
+    if (priceEl) priceEl.textContent = 'RM ' + (price % 1 === 0 ? price : parseFloat(price.toFixed(2)));
+    card.setAttribute('onclick', `addToCart('${p.id}','${p.game}','${p.pts}',${price})`);
+    const addBtn = card.querySelector('.add-btn');
+    if (addBtn) addBtn.setAttribute('onclick', `event.stopPropagation();addToCart('${p.id}','${p.game}','${p.pts}',${price})`);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  reloadPricesFromStorage();
+  document.getElementById('ring-circle2').style.strokeDasharray = '0 ' + PERIMETER2;
+  document.getElementById('pw-input2').addEventListener('keydown', e => { if (e.key==='Enter') submitPassword2(); });
+});
+</script>
 </body>
 </html>
