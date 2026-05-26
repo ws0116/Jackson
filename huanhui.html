@@ -51,6 +51,155 @@
 .rate-row .rate-val { color: var(--pink-lite); font-weight: 700; font-size: 14px; }
 
 .calc-card { margin: 0 20px 16px; }
+
+/* Admin Settings Panel */
+.admin-toggle {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 8px;
+}
+.admin-toggle button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+}
+.admin-panel {
+  display: none;
+  margin: 0 20px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.admin-panel.open { display: block; }
+.admin-panel h4 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-base-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.admin-base-row label {
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.admin-base-row input {
+  width: 90px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+}
+.admin-base-row button {
+  padding: 7px 16px;
+  background: linear-gradient(135deg,#ff4d8d,#e0357a);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.admin-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 480px) {
+  .admin-preview { grid-template-columns: 1fr; }
+}
+.admin-preview-card { font-size: 11px; }
+.admin-preview-title {
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  padding: 4px 8px;
+  border-radius: 5px;
+}
+.admin-preview-title.ap { background: #1677FF22; color: #1677FF; }
+.admin-preview-title.wx { background: #07C16022; color: #07C160; }
+.admin-preview-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.admin-preview-row:last-child { border-bottom: none; }
+.admin-preview-row .pr { color: var(--text-dim); }
+.admin-preview-row .pv { color: var(--pink-lite); font-weight: 700; }
+
+/* Long-press ring animation */
+.admin-icon-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.admin-icon-inner {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg,#ff4d8d,#e0357a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.admin-icon-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 14px;
+  border: 3px solid transparent;
+  pointer-events: none;
+  /* ring drawn via conic-gradient on pseudo or SVG */
+}
+/* SVG ring overlay */
+.admin-ring-svg {
+  position: absolute;
+  inset: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.admin-icon-wrap.pressing .admin-ring-svg { opacity: 1; }
+
+.admin-ring-circle {
+  fill: none;
+  stroke: #ff4d8d;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 0 200;
+  transition: stroke-dasharray 0s linear;
+}
+.admin-icon-wrap.pressing .admin-ring-circle {
+  stroke-dasharray: var(--dash, 0) 200;
+}
 </style>
 </head>
 <body>
@@ -86,10 +235,19 @@
   <a href="huanhui.html" class="nav-tab active">💱 人民币换汇</a>
   <a href="taoxian.html" class="nav-tab">💸 套现</a>
 </nav>
+
 <!-- SECTION TITLE -->
 <div class="section-title">
-  <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#ff4d8d,#e0357a);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">
-    💱
+  <!-- Long-press icon -->
+  <div class="admin-icon-wrap" id="admin-icon"
+       onmousedown="startPress()" onmouseup="cancelPress()" onmouseleave="cancelPress()"
+       ontouchstart="startPress(event)" ontouchend="cancelPress()" ontouchcancel="cancelPress()">
+    <div class="admin-icon-inner">💱</div>
+    <svg class="admin-ring-svg" viewBox="0 0 54 54" id="ring-svg">
+      <rect x="2" y="2" width="50" height="50" rx="12" ry="12"
+            class="admin-ring-circle" id="ring-circle"
+            style="stroke-dashoffset:0;"/>
+    </svg>
   </div>
   <div class="info">
     <h2>人民币换汇</h2>
@@ -99,30 +257,76 @@
 
 <div class="divider"></div>
 
-<!-- CALCULATOR -->
+<!-- ADMIN SETTINGS PANEL -->
+<div class="admin-panel" id="admin-panel">
+  <h4>⚙️ 基准汇率设置</h4>
+  <div class="admin-base-row">
+    <label>基准汇率：</label>
+    <input type="number" id="base-rate-input" value="1.71" step="0.01" min="1" max="9.99">
+    <button onclick="applyBaseRate()">✅ 应用</button>
+  </div>
+  <div class="admin-preview" id="admin-preview"></div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div id="pw-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 22px;width:280px;max-width:90vw;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <span style="font-size:20px">🔒</span>
+      <span style="font-weight:700;font-size:15px">管理员验证</span>
+    </div>
+    <p style="font-size:12px;color:var(--text-dim);margin:0 0 12px">请输入管理员密码以继续</p>
+    <input id="pw-input" type="password" placeholder="输入密码"
+      onkeydown="if(event.key==='Enter')submitPassword()"
+      style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;margin-bottom:6px;">
+    <p id="pw-error" style="display:none;color:#ff4d4d;font-size:12px;margin:0 0 10px">❌ 密码错误，请重试</p>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button onclick="closePwModal()" style="flex:1;padding:10px;background:transparent;color:var(--text-dim);border:1px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;">取消</button>
+      <button onclick="submitPassword()" style="flex:1;padding:10px;background:linear-gradient(135deg,#ff4d8d,#e0357a);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">确认</button>
+    </div>
+  </div>
+</div>
+
 <div class="calc-card">
   <h3>💰 换汇计算器</h3>
-  <div class="calc-row">
-    <div class="calc-field">
-      <label>马币金额 (RM)</label>
-      <input type="number" id="rm-input" value="10000" min="1" oninput="calcCurrency()">
-    </div>
-    <div class="calc-field">
+  <!-- Method selector -->
+  <div class="calc-row" style="margin-bottom:12px;">
+    <div class="calc-field" style="flex:1;">
       <label>收款方式</label>
-      <select id="method-select" onchange="calcCurrency()">
+      <select id="method-select" onchange="fromRM()">
         <option value="alipay">支付宝</option>
         <option value="wechat">微信支付</option>
       </select>
     </div>
   </div>
-  <div class="calc-result">
+  <!-- Bidirectional inputs -->
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="calc-field" style="flex:1;">
+      <label>马币金额 (RM)</label>
+      <input type="number" id="rm-input" value="10000" min="0" step="any" oninput="fromRM()">
+    </div>
+    <!-- swap button -->
+    <div style="padding-top:18px;flex-shrink:0;">
+      <button onclick="swapCalc()" title="交换方向"
+        style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff4d8d,#e0357a);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px var(--pink-glow);transition:transform .15s;"
+        onmouseenter="this.style.transform='rotate(180deg)'" onmouseleave="this.style.transform='rotate(0deg)'">
+        ⇄
+      </button>
+    </div>
+    <div class="calc-field" style="flex:1;">
+      <label>人民币金额 (¥)</label>
+      <input type="number" id="cny-input" value="16900" min="0" step="any" oninput="fromCNY()">
+    </div>
+  </div>
+  <!-- Rate display -->
+  <div class="calc-result" style="margin-top:10px;">
     <div class="calc-result-row">
       <span class="label">适用汇率</span>
       <span class="value" id="rate-display">1.69</span>
     </div>
     <div class="calc-result-row">
-      <span class="label">可得人民币</span>
-      <span class="value yellow" id="cny-display">¥ 16900.00</span>
+      <span class="label" id="calc-direction-label">RM → 人民币</span>
+      <span class="value yellow" id="result-display">¥ 16900.00</span>
     </div>
   </div>
 </div>
@@ -169,23 +373,35 @@
 
 <script src="cart.js"></script>
 <script>
-// Tiered rates
-const alipayRates = [
-  { min: 0,     max: 50,    rate: 1.50 },
-  { min: 50,    max: 100,   rate: 1.50 },
-  { min: 100,   max: 1000,  rate: 1.66 },
-  { min: 1000,  max: 5000,  rate: 1.67 },
-  { min: 5000,  max: 10000, rate: 1.68 },
-  { min: 10000, max: Infinity, rate: 1.69 },
+// ── Base rate & offsets ──────────────────────────────────────────────────────
+const ALIPAY_OFFSETS = [
+  { min: 0,     max: 50,    fixed: 1.50 },
+  { min: 50,    max: 100,   fixed: 1.60 },
+  { min: 100,   max: 1000,  offset: 0.05 },
+  { min: 1000,  max: 5000,  offset: 0.04 },
+  { min: 5000,  max: 10000, offset: 0.03 },
+  { min: 10000, max: Infinity, offset: 0.02 },
 ];
-const wechatRates = [
-  { min: 0,     max: 50,    rate: 1.50 },
-  { min: 50,    max: 100,   rate: 1.50 },
-  { min: 100,   max: 1000,  rate: 1.55 },
-  { min: 1000,  max: 5000,  rate: 1.66 },
-  { min: 5000,  max: 10000, rate: 1.67 },
-  { min: 10000, max: Infinity, rate: 1.68 },
+const WECHAT_OFFSETS = [
+  { min: 0,     max: 50,    fixed: 1.50 },
+  { min: 50,    max: 100,   fixed: 1.60 },
+  { min: 100,   max: 1000,  offset: 0.06 },
+  { min: 1000,  max: 5000,  offset: 0.05 },
+  { min: 5000,  max: 10000, offset: 0.04 },
+  { min: 10000, max: Infinity, offset: 0.03 },
 ];
+
+let BASE_RATE = parseFloat(localStorage.getItem('jackson_base_rate') || '1.71');
+
+function buildRates(offsets) {
+  return offsets.map(t => ({
+    min: t.min, max: t.max,
+    rate: t.fixed !== undefined ? t.fixed : parseFloat((BASE_RATE - t.offset).toFixed(2))
+  }));
+}
+
+let alipayRates = buildRates(ALIPAY_OFFSETS);
+let wechatRates = buildRates(WECHAT_OFFSETS);
 
 function getRate(rm, method) {
   const tiers = method === 'alipay' ? alipayRates : wechatRates;
@@ -193,16 +409,203 @@ function getRate(rm, method) {
   return tier.rate;
 }
 
-function calcCurrency() {
+// ── Bidirectional Calculator ─────────────────────────────────────────────────
+let _lastDir = 'rm'; // 'rm' or 'cny'
+
+function fromRM() {
+  _lastDir = 'rm';
   const rm     = parseFloat(document.getElementById('rm-input').value) || 0;
   const method = document.getElementById('method-select').value;
   const rate   = getRate(rm, method);
+  const cny    = rm * rate;
   document.getElementById('rate-display').textContent = rate.toFixed(2);
-  document.getElementById('cny-display').textContent  = '¥ ' + (rm * rate).toFixed(2);
+  document.getElementById('cny-input').value          = cny ? cny.toFixed(2) : '';
+  document.getElementById('calc-direction-label').textContent = 'RM → 人民币';
+  document.getElementById('result-display').textContent       = '¥ ' + cny.toFixed(2);
 }
 
-document.addEventListener('DOMContentLoaded', calcCurrency);
+function fromCNY() {
+  _lastDir = 'cny';
+  const cny    = parseFloat(document.getElementById('cny-input').value) || 0;
+  const method = document.getElementById('method-select').value;
+  // For CNY→RM we iterate to find the right tier (RM amount determines rate)
+  // Binary-search / iterate: guess rm = cny / bestRate, then refine once
+  const tiers  = method === 'alipay' ? alipayRates : wechatRates;
+  let rm = 0;
+  for (let i = 0; i < 20; i++) {
+    const rate = getRate(rm, method);
+    rm = cny / rate;
+  }
+  const rate = getRate(rm, method);
+  rm = cny / rate;
+  document.getElementById('rate-display').textContent = rate.toFixed(2);
+  document.getElementById('rm-input').value           = rm ? rm.toFixed(2) : '';
+  document.getElementById('calc-direction-label').textContent = '人民币 → RM';
+  document.getElementById('result-display').textContent       = 'RM ' + rm.toFixed(2);
+}
 
+function swapCalc() {
+  if (_lastDir === 'rm') {
+    // Switch focus to CNY input and let user type CNY
+    const cnyInput = document.getElementById('cny-input');
+    cnyInput.focus();
+    cnyInput.select();
+    fromCNY();
+  } else {
+    const rmInput = document.getElementById('rm-input');
+    rmInput.focus();
+    rmInput.select();
+    fromRM();
+  }
+}
+
+// Alias for goCheckout compatibility
+function calcCurrency() { fromRM(); }
+
+function updateRateTableDOM() {
+  const alipayRows = document.querySelectorAll('.rate-table-card:nth-child(1) .rate-row .rate-val');
+  const wechatRows = document.querySelectorAll('.rate-table-card:nth-child(2) .rate-row .rate-val');
+  alipayRates.forEach((t, i) => { if (alipayRows[i]) alipayRows[i].textContent = t.rate.toFixed(2); });
+  wechatRates.forEach((t, i) => { if (wechatRows[i]) wechatRows[i].textContent = t.rate.toFixed(2); });
+}
+
+// ── Long-press logic (5 seconds) ─────────────────────────────────────────────
+const PRESS_DURATION = 5000; // ms
+let pressTimer = null;
+let pressStart = null;
+let rafId = null;
+let adminUnlocked = false;
+
+// Rect perimeter for the SVG (54x54 viewBox, rect at x=2,y=2 w=50 h=50 rx=12)
+// perimeter ≈ 2*(50+50) - (2π - 8)*12 ≈ 200 - 52.55 ≈ ... use 185 as approx
+const PERIMETER = 185;
+
+function startPress(e) {
+  if (e) e.preventDefault();
+  if (pressTimer) return;
+  pressStart = Date.now();
+
+  const icon = document.getElementById('admin-icon');
+  icon.classList.add('pressing');
+
+  function tick() {
+    const elapsed = Date.now() - pressStart;
+    const progress = Math.min(elapsed / PRESS_DURATION, 1);
+    const dash = progress * PERIMETER;
+    document.getElementById('ring-circle').style.strokeDasharray = dash + ' ' + PERIMETER;
+
+    if (progress < 1) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      // Completed 5 seconds
+      finishPress();
+    }
+  }
+  rafId = requestAnimationFrame(tick);
+}
+
+function cancelPress() {
+  if (!pressTimer && !pressStart) return;
+  pressStart = null;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  const icon = document.getElementById('admin-icon');
+  icon.classList.remove('pressing');
+  document.getElementById('ring-circle').style.strokeDasharray = '0 ' + PERIMETER;
+}
+
+function finishPress() {
+  cancelPress();
+  if (adminUnlocked) {
+    // Already unlocked — toggle panel
+    const panel = document.getElementById('admin-panel');
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open')) {
+      document.getElementById('base-rate-input').value = BASE_RATE.toFixed(2);
+      renderAdminPreview();
+    }
+  } else {
+    // Show password modal
+    document.getElementById('pw-modal').style.display = 'flex';
+    setTimeout(() => document.getElementById('pw-input').focus(), 100);
+  }
+}
+
+// ── Admin panel ──────────────────────────────────────────────────────────────
+function submitPassword() {
+  const val = document.getElementById('pw-input').value;
+  if (val === '011681abc') {
+    adminUnlocked = true;
+    document.getElementById('pw-modal').style.display = 'none';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-error').style.display = 'none';
+    const panel = document.getElementById('admin-panel');
+    panel.classList.add('open');
+    document.getElementById('base-rate-input').value = BASE_RATE.toFixed(2);
+    renderAdminPreview();
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function closePwModal() {
+  document.getElementById('pw-modal').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').style.display = 'none';
+}
+
+function applyBaseRate() {
+  const val = parseFloat(document.getElementById('base-rate-input').value);
+  if (!val || val < 1) { alert('请输入有效汇率！'); return; }
+  BASE_RATE = val;
+  localStorage.setItem('jackson_base_rate', BASE_RATE.toFixed(2));
+  alipayRates = buildRates(ALIPAY_OFFSETS);
+  wechatRates = buildRates(WECHAT_OFFSETS);
+  updateRateTableDOM();
+  renderAdminPreview();
+  fromRM();
+  const btn = document.querySelector('#admin-panel .admin-base-row button');
+  btn.textContent = '✔ 已更新';
+  setTimeout(() => btn.textContent = '✅ 应用', 1500);
+}
+
+const TIER_LABELS = ['低于 RM50','RM50–100','RM100–1000','RM1000–5000','RM5000–10000','RM1万以上'];
+
+function renderAdminPreview() {
+  const base = parseFloat(document.getElementById('base-rate-input').value) || BASE_RATE;
+  const apRates = ALIPAY_OFFSETS.map(t => t.fixed !== undefined ? t.fixed : parseFloat((base - t.offset).toFixed(2)));
+  const wxRates = WECHAT_OFFSETS.map(t => t.fixed !== undefined ? t.fixed : parseFloat((base - t.offset).toFixed(2)));
+  const offLabel = (t) => t.fixed !== undefined ? '固定' : `${base.toFixed(2)}-${t.offset.toFixed(2)}`;
+  let html = `
+    <div class="admin-preview-card">
+      <div class="admin-preview-title ap">💙 支付宝</div>
+      ${ALIPAY_OFFSETS.map((t,i)=>`
+        <div class="admin-preview-row">
+          <span class="pr">${TIER_LABELS[i]}</span>
+          <span class="pv">${apRates[i].toFixed(2)} <span style="color:var(--text-dim);font-weight:400">(${offLabel(t)})</span></span>
+        </div>`).join('')}
+    </div>
+    <div class="admin-preview-card">
+      <div class="admin-preview-title wx">💚 微信</div>
+      ${WECHAT_OFFSETS.map((t,i)=>`
+        <div class="admin-preview-row">
+          <span class="pr">${TIER_LABELS[i]}</span>
+          <span class="pv">${wxRates[i].toFixed(2)} <span style="color:var(--text-dim);font-weight:400">(${offLabel(t)})</span></span>
+        </div>`).join('')}
+    </div>`;
+  document.getElementById('admin-preview').innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  fromRM();
+  updateRateTableDOM();
+  document.getElementById('base-rate-input').addEventListener('input', renderAdminPreview);
+  // Initialise ring dash
+  document.getElementById('ring-circle').style.strokeDasharray = '0 ' + PERIMETER;
+});
+
+// ── Checkout ─────────────────────────────────────────────────────────────────
 function goCheckout() {
   const rm     = parseFloat(document.getElementById('rm-input').value) || 0;
   const method = document.getElementById('method-select').value;
