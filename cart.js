@@ -53,6 +53,11 @@ function refreshUI() {
   updateCartBar();
   syncCards();
   if(typeof renderCartPage === 'function') renderCartPage();
+  // If checkout overlay is open, re-render it too
+  const overlay = document.getElementById('checkoutOverlay');
+  if (overlay && overlay.classList.contains('open')) {
+    renderCheckoutForm();
+  }
 }
 
 // ── Cart Bar 底部购物车浮条更新 ───────────────────────────────────────────────────
